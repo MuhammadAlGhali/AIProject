@@ -28,7 +28,10 @@ namespace AIProject
             this.possibleIntialStates = new List<Tuple<int, int>>();
             FindInitialStates();
         }
-
+        public double getLearningRate(NGrid n_grid,Tuple<int,int> state, int action)
+        {
+            return n_grid.getCellN(state, action);
+        }
         private void FindInitialStates()
         {
             for(int i =0; i < grid.GetGrid().GetLength(0); i++)
@@ -42,6 +45,14 @@ namespace AIProject
                 }
             }
         }
+        //public void PrintInitialStates()
+        //{
+        //    for(int i=0; i < possibleIntialStates.Count; i++)
+        //    {
+        //        Console.Write(possibleIntialStates[i] + ", ");
+        //    }
+        //}
+        
 
         private Tuple<int,int> ApplyAction(Tuple<int, int> currentState ,int action)
         {
@@ -74,6 +85,7 @@ namespace AIProject
 
             return highest_value;
         }
+        
 
         public void Train()
         {
@@ -86,25 +98,35 @@ namespace AIProject
 
                 while (steps < 100)
                 {
-
-                    //Console.WriteLine($"{steps}- Current State: ({currentState.Item1}, {currentState.Item2})");
-
+                    
                     int next_action = E_Greedy_Action_Selection.Select_NextAction(this);
 
+                    Random drift = new Random();
+                    double driftrate = drift.NextDouble();
+
+                    if (driftrate>0.8 && driftrate < 0.9)
+                    {
+                        next_action = (next_action + 1) % 3;
+                    }
+                    if(driftrate > 0.9 && driftrate < 1.0)
+                    {
+                        next_action = (next_action + 3) % 3;
+                    }
+                    
                     // N(s,a) = N(s,a) + 1
                     n_grid.GetGrid()[this.currentState.Item1 * 7 + this.currentState.Item2, next_action]++;
 
                     // Q(s,a) = Q(s,a) + 1/N(s,a)(R(s,a) + gamma * max Q(s', a') - Q(s,a))
-                    Tuple<int, int> nextState = ApplyAction(this.currentState, next_action);
-                    double old_value = (double)q_grid.GetGrid()[this.currentState.Item1 * 7 + this.currentState.Item2, next_action];
+                    Tuple<int, int> nextQState = ApplyAction(this.currentState, next_action); //Q(s',a')
+                    double currentQ_value = (double)q_grid.GetGrid()[this.currentState.Item1 * 7 + this.currentState.Item2, next_action];//Q(s,a)
                     this.learning_rate = 1 / n_grid.getCellN(this.currentState, next_action);
                     q_grid.GetGrid()[this.currentState.Item1 * 7 + this.currentState.Item2, next_action] =
-                        old_value + this.learning_rate * (Rewards.GetReward(next_action) + this.discount_factor * GetNextActionMax(nextState) - old_value);
+                        currentQ_value + this.learning_rate * (Rewards.GetReward(next_action) + this.discount_factor * GetNextActionMax(nextQState) - currentQ_value);
 
                     // if next state is not an obstacle set current state to next state
-                    if (!(grid.GetGrid()[nextState.Item1, nextState.Item2] is string && (string)grid.GetGrid()[nextState.Item1, nextState.Item2] == "####"))
+                    if (!(grid.GetGrid()[nextQState.Item1, nextQState.Item2] is string && (string)grid.GetGrid()[nextQState.Item1, nextQState.Item2] == "####"))
                     {
-                        this.currentState = nextState;
+                        this.currentState = nextQState;
                     }
 
                     // check if terminal state reached
@@ -118,18 +140,7 @@ namespace AIProject
             }
         }
         
-        public double getLearningRate(NGrid n_grid,Tuple<int,int> state, int action)
-        {
-            return n_grid.getCellN(state, action);
-        }
-
-        public void PrintInitialStates()
-        {
-            for(int i=0; i < possibleIntialStates.Count; i++)
-            {
-                Console.Write(possibleIntialStates[i] + ", ");
-            }
-        }
+        
 
 
 

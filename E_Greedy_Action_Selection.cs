@@ -11,22 +11,6 @@ namespace AIProject
 
         public static int Select_NextAction(E_Greedy_Q_Learning q_learn)
         {
-            /*
-                        for (int i = 0; i < 200; i++)
-                        {
-                            Random rnd = new Random();
-                            double random_iteration = rnd.NextDouble();
-                            random_iteration = Math.Round(random_iteration, 2);
-                            if (random_iteration < q_learn.epsilon)
-                            {
-                                Console.WriteLine(random_iteration);
-                            }
-                            else
-                            {
-                                Console.WriteLine(random_iteration);
-                            }
-                        }*/
-
             Random rnd = new Random();
             double random_value = rnd.NextDouble();
             Tuple<int, int> current_state = q_learn.currentState;

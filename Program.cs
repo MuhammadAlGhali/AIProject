@@ -10,6 +10,7 @@ namespace AIProject
             QGrid q_grid = new QGrid(MDP);
             NGrid n_grid = new NGrid(MDP);
             E_Greedy_Q_Learning q_learning = new E_Greedy_Q_Learning(MDP, q_grid, n_grid);
+            OptimalPolicyGrid OP_grid = new OptimalPolicyGrid();
 
             //MDP.printGrid();
             //Console.WriteLine();
@@ -21,6 +22,7 @@ namespace AIProject
             q_grid.printGrid();
             Console.WriteLine();
             q_learning.Train();
+            OP_grid.ShowOP(q_grid,MDP);
             q_grid.printGrid();
 
         }
