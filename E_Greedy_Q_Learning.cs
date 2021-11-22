@@ -27,10 +27,11 @@ namespace AIProject
             this.epsilon = epsilon;
             this.possibleIntialStates = new List<Tuple<int, int>>();
             FindInitialStates();
+            
         }
         public double getLearningRate(NGrid n_grid,Tuple<int,int> state, int action)
         {
-            return n_grid.getCellN(state, action);
+            return 1/n_grid.getCellN(state, action)+1;
         }
         private void FindInitialStates()
         {
@@ -66,17 +67,20 @@ namespace AIProject
             }
         }
 
-        private double GetNextActionMax(Tuple<int,int> nextState)
+        private double GetNextActionMax(Tuple<int, int> nextState, Tuple<int, int> currentState)
         {
             double highest_value = double.MinValue;
 
-            if(q_grid.GetGrid()[nextState.Item1 * 7 + nextState.Item2, 0] is null)
-            {
-                return 0;
-            }
-
             for (int i = 0; i < 4; i++)
             {
+                if (q_grid.GetGrid()[nextState.Item1 * 7 + nextState.Item2, i] is null)
+                {
+                    return (double)q_grid.GetGrid()[currentState.Item1 * 7 + currentState.Item2, i];
+                }
+                if (q_grid.GetGrid()[nextState.Item1 * 7 + nextState.Item2, i] == -50 || q_grid.GetGrid()[nextState.Item1 * 7 + nextState.Item2, i] == +100)
+                {
+                    return (double)q_grid.GetGrid()[nextState.Item1 * 7 + nextState.Item2, i];
+                }
                 if (q_grid.GetGrid()[nextState.Item1 * 7 + nextState.Item2, i] > highest_value)
                 {
                     highest_value = (double)q_grid.GetGrid()[nextState.Item1 * 7 + nextState.Item2, i];
@@ -112,22 +116,32 @@ namespace AIProject
                     {
                         next_action = (next_action + 3) % 3;
                     }
-                    
+
                     // N(s,a) = N(s,a) + 1
                     n_grid.GetGrid()[this.currentState.Item1 * 7 + this.currentState.Item2, next_action]++;
 
+
                     // Q(s,a) = Q(s,a) + 1/N(s,a)(R(s,a) + gamma * max Q(s', a') - Q(s,a))
-                    Tuple<int, int> nextQState = ApplyAction(this.currentState, next_action); //Q(s',a')
+                    Tuple<int, int> nextQState = ApplyAction(this.currentState, next_action); //S'
                     double currentQ_value = (double)q_grid.GetGrid()[this.currentState.Item1 * 7 + this.currentState.Item2, next_action];//Q(s,a)
-                    this.learning_rate = 1 / n_grid.getCellN(this.currentState, next_action);
+                    double nextQ_value = GetNextActionMax(nextQState, currentState);
+                    learning_rate = getLearningRate(n_grid,currentState,next_action);
                     q_grid.GetGrid()[this.currentState.Item1 * 7 + this.currentState.Item2, next_action] =
-                        currentQ_value + this.learning_rate * (Rewards.GetReward(next_action) + this.discount_factor * GetNextActionMax(nextQState) - currentQ_value);
+                        currentQ_value + (learning_rate * (Rewards.GetReward(next_action) + this.discount_factor * nextQ_value  - currentQ_value));
+
+                    
 
                     // if next state is not an obstacle set current state to next state
                     if (!(grid.GetGrid()[nextQState.Item1, nextQState.Item2] is string && (string)grid.GetGrid()[nextQState.Item1, nextQState.Item2] == "####"))
                     {
                         this.currentState = nextQState;
                     }
+                    else
+                    {
+                        nextQState = currentState;
+                    }
+                    
+                   
 
                     // check if terminal state reached
                     if (grid.GetGrid()[this.currentState.Item1, this.currentState.Item2] is int)

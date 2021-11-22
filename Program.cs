@@ -19,10 +19,12 @@ namespace AIProject
             //n_grid.printGrid();
             //Console.WriteLine();
             //q_learning.PrintInitialStates();
-            q_grid.printGrid();
-            Console.WriteLine();
+            
             q_learning.Train();
-            OP_grid.ShowOP(q_grid,MDP);
+            OP_grid.ShowOP(q_grid);
+            Console.WriteLine();
+            n_grid.printGrid();
+            Console.WriteLine();
             q_grid.printGrid();
 
         }
