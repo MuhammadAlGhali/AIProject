@@ -8,8 +8,9 @@ namespace AIProject
 {
     public class QGrid
     {
-        double?[,] q_grid = new double?[42, 4]; // 7x7 grid=42 states and 4 possibile actions
-        // a0=left, a1=up, a2=right a3=down
+        double?[,] q_grid = new double?[42, 4]; // 6x7 rows=42 states and columns=4 possibile actions
+        //Therefore we have 42 states and 4 actions and Q-Tables shows each state with all Q-values for all States
+        // 0=left, 1=up, 2=right 3=down
 
         public double?[,] GetGrid()
         {
@@ -31,6 +32,7 @@ namespace AIProject
                 {
                     if(grid[i,j] is string)
                     {
+                        //If the Value in the Basic Grid is #### replace it with null which represents a wall which has no Q-values
                         if ((string)grid[i, j] == "####")
                         {
                             for (int k = 0; k < 4; k++)
@@ -38,6 +40,7 @@ namespace AIProject
                                 q_grid[i * 7 + j, k] = null;
                             }
                         }
+                        //If the Value in the Basic Grid is Empty replace it with 0 which represents an Empty unaccessed cell which has 0 Q-values for now
                         else if ((string)grid[i, j] == "Empty")
                         {
                             for (int k = 0; k < 4; k++)
@@ -46,6 +49,7 @@ namespace AIProject
                             }
                         }
                     }
+                    //This is the case of terminal states we replace all Q-values with 1 Q-value which is the value of the terminal state
                     else
                     {
                         for (int k = 0; k < 4; k++)

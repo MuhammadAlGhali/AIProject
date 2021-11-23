@@ -8,6 +8,7 @@ namespace AIProject
 {
     public class Grid
     {
+        //Initializing the basic grid
         dynamic[,] gridworld = new dynamic[6, 7]
         {
                 {-50,-50,-50,-50,-50,-50,-50},
@@ -17,6 +18,7 @@ namespace AIProject
                 {-50,"Empty","Empty","Empty","Empty","Empty",-50},
                 {-50,-50,-50,-50,-50,-50,-50},
         };
+
 
         public dynamic[,] GetGrid()
         {

@@ -8,8 +8,8 @@ namespace AIProject
 {
     public class NGrid
     {
-        int?[,] n_grid = new int?[42, 4]; // 6x7 grid=42 states and 4 possibile actions
-                                          // a0=left, a1=up, a2=right a3=down
+        int?[,] n_grid = new int?[42, 4]; // 6x7 rows = 42 states and columns = 4 actions
+                                          // 0=left, 1=up, 2=right 3=down
 
         public int?[,] GetGrid()
         {
@@ -32,6 +32,7 @@ namespace AIProject
                 {
                     if (grid[i, j] is string)
                     {
+                        //If the Value in the Basic Grid is #### replace it with null which represents a wall which has no N-values since no moves can be done in this square
                         if ((string)grid[i, j] == "####")
                         {
                             for (int k = 0; k < 4; k++)
@@ -39,6 +40,7 @@ namespace AIProject
                                 n_grid[i * 7 + j, k] = null;
                             }
                         }
+                        //If the Value in the Basic Grid is Empty replace it with 0 which represents a wall which has 0 N-values for now
                         else if ((string)grid[i, j] == "Empty")
                         {
                             for (int k = 0; k < 4; k++)
@@ -47,6 +49,7 @@ namespace AIProject
                             }
                         }
                     }
+                    //This is the case of terminal states we replace all N-values with 1 N-value which is the value of the terminal state
                     else
                     {
                         for (int k = 0; k < 4; k++)
@@ -70,6 +73,8 @@ namespace AIProject
                 Console.Write("\n");
             }
         }
+        //Get the Value of the cell for a specific action
+        //I did this function to simplify the code and use this function whenever i want the Frequency at the cell with the direction specified
         public int getCellN(Tuple<int, int> state, int action)
         {
            int? result = n_grid[state.Item1*7+state.Item2, action];

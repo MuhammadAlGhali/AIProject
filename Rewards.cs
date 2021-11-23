@@ -8,7 +8,7 @@ namespace AIProject
 {
     public static class Rewards
     {
-
+        //Rewards for each move
         public const int LEFT = -2;
         public const int RIGHT = -2;
         public const int UP =-3;
@@ -16,9 +16,9 @@ namespace AIProject
 
         public static int GetReward(int action)
         {
-            switch (action)
+            switch (action) //0,1,2,3 are the actions starting from left and moving clockwise
             {
-                case 0: return LEFT;
+                case 0: return LEFT; 
                 case 1: return UP;
                 case 2: return RIGHT;
                 case 3: return DOWN;

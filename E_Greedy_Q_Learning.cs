@@ -18,6 +18,7 @@ namespace AIProject
         public double epsilon = 0.1;
         public List<Tuple<int, int>> possibleIntialStates;
 
+        //Constructor which sets all the Fixed Values for us for use in the next steps
         public E_Greedy_Q_Learning(Grid grid, QGrid q_grid, NGrid n_grid, double discount_factor=0.9, double epsilon=0.1)
         {
             this.grid = grid;
@@ -29,10 +30,12 @@ namespace AIProject
             FindInitialStates();
             
         }
+        //The learning rate is 1/N(s,a) so we use a function to apply single responsibility principles and to make everything simpler in the learning process
         public double getLearningRate(NGrid n_grid,Tuple<int,int> state, int action)
         {
             return 1/n_grid.getCellN(state, action)+1;
         }
+        //Find the Empty States which are our initial states for the learning process
         private void FindInitialStates()
         {
             for(int i =0; i < grid.GetGrid().GetLength(0); i++)
@@ -54,7 +57,7 @@ namespace AIProject
         //    }
         //}
         
-
+        //This function get us the next state's coordinates in the grid given the current state and the action that is going to be applied
         private Tuple<int,int> ApplyAction(Tuple<int, int> currentState ,int action)
         {
             switch (action)
@@ -67,6 +70,7 @@ namespace AIProject
             }
         }
 
+        //This function gets the best Q-Value of the next state for the Q-learning process.
         private double GetNextActionMax(Tuple<int, int> nextState, Tuple<int, int> currentState)
         {
             double highest_value = double.MinValue;
@@ -91,6 +95,7 @@ namespace AIProject
         }
         
 
+        //run of 50000 trails doing the q-learning and starting at a different random initial state 
         public void Train()
         {
             for(int trial=0; trial < 50000; trial++)
@@ -99,7 +104,7 @@ namespace AIProject
 
                 Tuple<int, int> initialState = possibleIntialStates[new Random().Next(0, possibleIntialStates.Count)];
                 this.currentState = initialState;
-
+                //If the trial does more than 100 step and didn't reach a certain terminal state end the trail.
                 while (steps < 100)
                 {
                     
@@ -108,12 +113,14 @@ namespace AIProject
                     Random drift = new Random();
                     double driftrate = drift.NextDouble();
 
+                    //Probabilities of drifting with the 0.8,0.1 and 0.1
                     if (driftrate>0.8 && driftrate < 0.9)
                     {
                         next_action = (next_action + 1) % 3;
                     }
                     if(driftrate > 0.9 && driftrate < 1.0)
                     {
+                        // if the action is 0 we can't decrease it by 1 since it won't be a valid action
                         next_action = (next_action + 3) % 3;
                     }
 
